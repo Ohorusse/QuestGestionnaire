@@ -10,7 +10,7 @@ export default {
     return {
       quests: [
 
-        {
+  {
     id: 1,
     title: 'Quête de débutant',
     description: 'Tuez 20 Slimes',
@@ -34,31 +34,42 @@ export default {
     difficulty: 'Difficile',
     status: 'Terminée',
   }
-        ]
+      ]
+    }
+  },
+
+  computed: {
+      questsEC() {
+        return this.quests.filter(quest => quest.status === 'En cours')
+      },
+      questsAF() {
+        return this.quests.filter(quest => quest.status === 'Disponible')
+      },
+      questsFin() {
+        return this.quests.filter(quest => quest.status === 'Terminée')
       }
     },
-computed: {
-    questsEC() {
-      return this.quests.filter(quest => quest.status === 'En cours')
-    },
-    questsAF() {
-      return this.quests.filter(quest => quest.status === 'Disponible')
-    },
-    questsFin() {
-      return this.quests.filter(quest => quest.status === 'Terminée')
+
+  methods:{
+    addQuest(newQuest) {
+      this.quests.push({
+        id: this.quests.length + 1,
+        ...newQuest
+      })
     }
   }
 }
 
 
 </script>
+
 <template>
 <h1>Table des quêtes</h1>
-<div1 class="quest-columns">
+<div class="quest-columns">
   <QuestList title="Quêtes en cours" :quests="questsEC"/>
   <QuestList title="Quêtes disponibles" :quests="questsAF"/>
   <QuestList title="Quêtes terminées" :quests="questsFin"/>
-</div1>
+</div>
 </template>
 
 <style>

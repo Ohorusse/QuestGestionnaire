@@ -15,7 +15,7 @@ export default {
       <h2>{{ quest.title }} ({{ quest.difficulty }})</h2>
       <p>{{ quest.description }}</p>
       <p>Reward: {{ quest.reward }}</p>
-      <h2 class="centered">Status: {{ quest.status }}</h2>
+      <h2 class="centered">Statut: {{ quest.status }}</h2>
   </div>
 </template>
 
