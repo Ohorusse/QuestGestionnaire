@@ -7,7 +7,7 @@ export default {
     QuestList
   },
   created() {
-    this.loadBoardData()
+    this.loadQuestsFromStorage()
   },
   data() {
     return {
@@ -38,14 +38,14 @@ export default {
     status: 'Terminée',
   }
       ],
-      newQuest: {
+      questForm: {
         title: '',
         description: '',
         reward: '',
         difficulty: 'Facile',
       },
-      editingQuestId: null,
-      nextId: 4,
+      questBeingEditedId: null,
+      nextQuestId: 4,
     }
   },
 
@@ -62,13 +62,13 @@ export default {
     },
 
   methods:{
-    saveBoardData() {
+    saveQuestsToStorage() {
       localStorage.setItem('questBoardData', JSON.stringify({
         quests: this.quests,
-        nextId: this.nextId,
+        nextId: this.nextQuestId,
       }))
     },
-    loadBoardData() {
+    loadQuestsFromStorage() {
       const savedData = localStorage.getItem('questBoardData')
       if (!savedData) {
         return
@@ -79,23 +79,23 @@ export default {
         this.quests = parsedData.quests
       }
       if (parsedData.nextId) {
-        this.nextId = parsedData.nextId
+        this.nextQuestId = parsedData.nextId
       }
     },
 
-    addQuest(newQuest) {
+    addQuest(questToAdd) {
       this.quests.push({
-      id: this.nextId,
-      ...newQuest,
+      id: this.nextQuestId,
+      ...questToAdd,
       status: 'Disponible',
       })
-      this.nextId += 1
-      this.saveBoardData()
+      this.nextQuestId += 1
+      this.saveQuestsToStorage()
     },
 
-    startEditQuest(quest) {
-      this.editingQuestId = quest.id
-      this.newQuest = {
+    startQuestEdit(quest) {
+      this.questBeingEditedId = quest.id
+      this.questForm = {
         title: quest.title,
         description: quest.description,
         reward: quest.reward,
@@ -103,8 +103,8 @@ export default {
       }
     },
 
-    updateQuest(updatedQuest) {
-      const index = this.quests.findIndex(quest => quest.id === this.editingQuestId)
+    updateQuest(questUpdates) {
+      const index = this.quests.findIndex(quest => quest.id === this.questBeingEditedId)
 
       if (index === -1) {
         return
@@ -112,25 +112,36 @@ export default {
 
       this.quests[index] = {
         ...this.quests[index],
-        ...updatedQuest,
+        ...questUpdates,
       }
 
-      this.editingQuestId = null
-      this.newQuest = {
+      this.questBeingEditedId = null
+      this.questForm = {
         title: '',
         description: '',
         reward: '',
         difficulty: 'Facile',
       }
-      this.saveBoardData()
+      this.saveQuestsToStorage()
     },
-    
-    deleteQuest(questToDelete) {
-      this.quests = this.quests.filter(quest => quest.id !== questToDelete.id)
 
-      if (this.editingQuestId === questToDelete.id) {
-        this.editingQuestId = null
-        this.newQuest = {
+    changeQuestStatus(questToUpdate, newStatus) {
+      const index = this.quests.findIndex(quest => quest.id === questToUpdate.id)
+
+      if (index === -1) {
+        return
+      }
+
+      this.quests[index].status = newStatus
+      this.saveQuestsToStorage()
+    },
+
+    deleteQuest(questToRemove) {
+      this.quests = this.quests.filter(quest => quest.id !== questToRemove.id)
+
+      if (this.questBeingEditedId === questToRemove.id) {
+        this.questBeingEditedId = null
+        this.questForm = {
           title: '',
           description: '',
           reward: '',
@@ -138,22 +149,22 @@ export default {
         }
       }
 
-      this.saveBoardData()
+      this.saveQuestsToStorage()
     },
 
     submitQuest() {
-      if (!this.newQuest.title.trim()) {
+      if (!this.questForm.title.trim()) {
         return
       }
 
-      if (this.editingQuestId !== null) {
-        this.updateQuest({ ...this.newQuest })
+      if (this.questBeingEditedId !== null) {
+        this.updateQuest({ ...this.questForm })
         return
       }
 
-      this.addQuest({ ...this.newQuest })
+      this.addQuest({ ...this.questForm })
 
-      this.newQuest = {
+      this.questForm = {
         title: '',
         description: '',
         reward: '',
@@ -169,21 +180,21 @@ export default {
 <template>
 <h1>Table des quêtes</h1>
 <form class="quest-form" @submit.prevent="submitQuest">
-  <p class="form-label">{{ editingQuestId !== null ? 'Modifier la quête' : 'Ajouter une quête' }}</p>
-  <input v-model="newQuest.title" type="text" placeholder="Titre de la quête" />
-  <textarea v-model="newQuest.description" placeholder="Description"></textarea>
-  <input v-model="newQuest.reward" type="text" placeholder="Récompense" />
-  <select v-model="newQuest.difficulty">
+  <p class="form-label">{{ questBeingEditedId !== null ? 'Modifier la quête' : 'Ajouter une quête' }}</p>
+  <input v-model="questForm.title" type="text" placeholder="Titre de la quête" />
+  <textarea v-model="questForm.description" placeholder="Description"></textarea>
+  <input v-model="questForm.reward" type="text" placeholder="Récompense" />
+  <select v-model="questForm.difficulty">
     <option>Facile</option>
     <option>Moyenne</option>
     <option>Difficile</option>
   </select>
-  <button type="submit">{{ editingQuestId !== null ? 'Modifier la quête' : 'Ajouter la quête' }}</button>
+  <button type="submit">{{ questBeingEditedId !== null ? 'Modifier la quête' : 'Ajouter la quête' }}</button>
 </form>
 <div class="quest-columns">
-  <QuestList title="Quêtes en cours" :quests="questsEC" @edit-quest="startEditQuest" @delete-quest="deleteQuest"/>
-  <QuestList title="Quêtes disponibles" :quests="questsAF" @edit-quest="startEditQuest" @delete-quest="deleteQuest"/>
-  <QuestList title="Quêtes terminées" :quests="questsFin" @edit-quest="startEditQuest" @delete-quest="deleteQuest"/>
+  <QuestList title="Quêtes en cours" :quests="questsEC" @edit-quest="startQuestEdit" @delete-quest="deleteQuest" @change-status="changeQuestStatus"/>
+  <QuestList title="Quêtes disponibles" :quests="questsAF" @edit-quest="startQuestEdit" @delete-quest="deleteQuest" @change-status="changeQuestStatus"/>
+  <QuestList title="Quêtes terminées" :quests="questsFin" @edit-quest="startQuestEdit" @delete-quest="deleteQuest" @change-status="changeQuestStatus"/>
 </div>
 </template>
 

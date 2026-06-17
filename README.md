@@ -1,44 +1,34 @@
-# TP1
+# Gestionnaire de quêtes
 
-This template should help get you started developing with Vue 3 in Vite.
+Projet Vue.js de TP sur un gestionnaire de quêtes façon RPG.
 
-## Recommended IDE Setup
+## Thème choisi
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+J’ai choisi le thème RPG parce qu’il permet de travailler les composants Vue.js et la logique de board sans passer trop de temps sur le design.
 
-## Recommended Browser Setup
+## Fonctionnalités implémentées
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+- Board avec plusieurs colonnes: quêtes disponibles, en cours et terminées.
+- Affichage des quêtes avec `v-for`.
+- Ajout d’une quête avec formulaire et `v-model`.
+- Modification d’une quête en cliquant sur une carte.
+- Suppression d’une quête.
+- Déplacement d’une quête entre les colonnes.
+- Sauvegarde et chargement dans `localStorage`.
+- Rendu conditionnel selon la difficulté et le statut.
+- Props et emits pour faire communiquer les composants.
+- Slot simple dans la liste des quêtes.
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
+## Lancement du projet
 
 ```sh
 npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
 npm run dev
 ```
 
-### Compile and Minify for Production
+## Scripts utiles
 
 ```sh
 npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
 npm run lint
 ```
