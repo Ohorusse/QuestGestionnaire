@@ -15,7 +15,7 @@ export default {
 :global(body) {
   margin: 0;
   min-width: 320px;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
   color: #2d2216;
   background:
     radial-gradient(circle at top left, rgba(168, 124, 69, 0.2), transparent 30%),

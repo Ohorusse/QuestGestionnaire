@@ -36,7 +36,7 @@ export default {
       <h2>{{ quest.title }} ({{ quest.difficulty }})</h2>
       <p>{{ quest.description }}</p>
       <p>Récompense: {{ quest.reward }}</p>
-      <p v-if="quest.status === 'Terminée'" class="reward-badge">🏆 Récompense : {{ quest.reward }}</p>
+      <p v-if="quest.status === 'Terminée'" class="reward-badge">Quête validée</p>
       <p v-else class="reward-badge reward-badge--empty">Pas encore terminée</p>
       <h2 class="centered">Statut: {{ quest.status }}</h2>
       <div class="status-actions">

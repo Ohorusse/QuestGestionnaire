@@ -44,6 +44,7 @@ export default {
         reward: '',
         difficulty: 'Facile',
       },
+      isQuestFormOpen: false,
       questBeingEditedId: null,
       nextQuestId: 4,
     }
@@ -101,6 +102,23 @@ export default {
         reward: quest.reward,
         difficulty: quest.difficulty,
       }
+      this.isQuestFormOpen = true
+    },
+
+    openQuestForm() {
+      this.questBeingEditedId = null
+      this.questForm = {
+        title: '',
+        description: '',
+        reward: '',
+        difficulty: 'Facile',
+      }
+      this.isQuestFormOpen = true
+    },
+
+    closeQuestForm() {
+      this.isQuestFormOpen = false
+      this.questBeingEditedId = null
     },
 
     updateQuest(questUpdates) {
@@ -122,6 +140,7 @@ export default {
         reward: '',
         difficulty: 'Facile',
       }
+      this.isQuestFormOpen = false
       this.saveQuestsToStorage()
     },
 
@@ -170,6 +189,7 @@ export default {
         reward: '',
         difficulty: 'Facile',
       }
+      this.isQuestFormOpen = false
     }
   }
 }
@@ -179,18 +199,28 @@ export default {
 
 <template>
 <h1>Table des quêtes</h1>
-<form class="quest-form" @submit.prevent="submitQuest">
-  <p class="form-label">{{ questBeingEditedId !== null ? 'Modifier la quête' : 'Ajouter une quête' }}</p>
-  <input v-model="questForm.title" type="text" placeholder="Titre de la quête" />
-  <textarea v-model="questForm.description" placeholder="Description"></textarea>
-  <input v-model="questForm.reward" type="text" placeholder="Récompense" />
-  <select v-model="questForm.difficulty">
-    <option>Facile</option>
-    <option>Moyenne</option>
-    <option>Difficile</option>
-  </select>
-  <button type="submit">{{ questBeingEditedId !== null ? 'Modifier la quête' : 'Ajouter la quête' }}</button>
-</form>
+<button class="open-form-btn" type="button" @click="openQuestForm">Nouvelle quête</button>
+<transition name="fade">
+  <div v-if="isQuestFormOpen" class="quest-modal-backdrop" @click.self="closeQuestForm">
+    <div class="quest-modal">
+      <div class="quest-modal__header">
+        <p class="form-label">{{ questBeingEditedId !== null ? 'Modifier la quête' : 'Ajouter une quête' }}</p>
+        <button class="quest-modal__close" type="button" @click="closeQuestForm">×</button>
+      </div>
+      <form class="quest-form" @submit.prevent="submitQuest">
+        <input v-model="questForm.title" type="text" placeholder="Titre de la quête" />
+        <textarea v-model="questForm.description" placeholder="Description"></textarea>
+        <input v-model="questForm.reward" type="text" placeholder="Récompense" />
+        <select v-model="questForm.difficulty">
+          <option>Facile</option>
+          <option>Moyenne</option>
+          <option>Difficile</option>
+        </select>
+        <button type="submit">{{ questBeingEditedId !== null ? 'Modifier la quête' : 'Ajouter la quête' }}</button>
+      </form>
+    </div>
+  </div>
+</transition>
 <div class="quest-columns">
   <QuestList title="Quêtes en cours" :quests="questsEC" @edit-quest="startQuestEdit" @delete-quest="deleteQuest" @change-status="changeQuestStatus"/>
   <QuestList title="Quêtes disponibles" :quests="questsAF" @edit-quest="startQuestEdit" @delete-quest="deleteQuest" @change-status="changeQuestStatus"/>
@@ -208,17 +238,72 @@ export default {
   align-items: start;
 }
 
+.open-form-btn {
+  display: block;
+  width: min(1100px, 100%);
+  margin: 0 auto 20px;
+  padding: 13px 18px;
+  border: 1px solid rgba(122, 82, 31, 0.24);
+  border-radius: 14px;
+  background: linear-gradient(135deg, #8c5a1a, #c08a39);
+  color: #fff8ee;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 18px rgba(140, 90, 26, 0.18);
+}
+
+.quest-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(33, 22, 8, 0.62);
+  backdrop-filter: blur(6px);
+}
+
+.quest-modal {
+  width: min(560px, 100%);
+  padding: 20px;
+  border: 1px solid rgba(122, 82, 31, 0.24);
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255, 249, 236, 0.98), rgba(240, 221, 188, 0.94));
+  box-shadow: 0 24px 60px rgba(30, 18, 3, 0.28);
+}
+
+.quest-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.quest-modal__close {
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(141, 58, 40, 0.14);
+  color: #5c3a16;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
 .quest-form {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  width: min(520px, 100%);
-  margin: 0 auto 28px;
-  padding: 20px;
-  border: 1px solid rgba(122, 82, 31, 0.24);
-  border-radius: 20px;
-  background: linear-gradient(180deg, rgba(255, 249, 236, 0.96), rgba(240, 221, 188, 0.86));
-  box-shadow: 0 14px 32px rgba(88, 57, 21, 0.12);
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .form-label {
@@ -282,12 +367,26 @@ export default {
     grid-template-columns: 1fr;
   }
 
-  .quest-form {
+  .open-form-btn {
     width: 100%;
+  }
+
+  .quest-modal {
+    padding: 16px;
   }
 
   .quest-form button {
     width: 100%;
   }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
